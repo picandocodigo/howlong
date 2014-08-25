@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+require 'date'
+require 'time_ago_in_words'
+
+unless ARGV.length == 1
+  puts "ArgumentError: This command should be called with 1 argument"
+  puts "Usage: howlong [process search string]"
+  exit
+end
+
+processes = `ps -eo lstart,args | grep #{ARGV[0]}`.split(/\n/)
+processes.each do |p|
+  process = p.split(/\s/)[5]
+  if process.include?(ARGV[0])
+    period = DateTime.parse(p.match(/[a-zA-Z\s0-9:]+[0-9]{4}/)[0]).to_time.ago_in_words
+    puts "Process #{process} has been active since #{period}"
+  end
+end
