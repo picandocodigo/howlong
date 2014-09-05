@@ -5,10 +5,8 @@ been running:
 
 ```bash
 $ ./howlong emacs
-Process /usr/bin/emacs24 has been active since 7 days and 3 hours ago
-$ ./howlong pidgin
-Process pidgin has been active since 4 days and 3 hours ago
-```
+Process /usr/bin/emacs24 has been active for 2 days, 2 hours, 12 minutes and 37 seconds
+$ ./howlong iceweasel
+Process iceweasel has been active for 13 hours, 58 minutes and 21 seconds
 
-*Temporarily* uses the `time_ago_in_words` gem, so you should `gem
- install time_ago_in_words` for this work.
+```

@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 require 'date'
-require 'time_ago_in_words'
 
 unless ARGV.length == 1
   puts "ArgumentError: This command should be called with 1 argument"
@@ -10,9 +9,31 @@ end
 
 processes = `ps -eo lstart,args | grep #{ARGV[0]}`.split(/\n/)
 processes.each do |p|
-  process = p.split(/\s/)[5]
+  process = p.split(/\s/)[6]
+  # Make sure the first executable contains the search string, so we
+  # won't catch processes such as grep `parameter` or this script:
   if process.include?(ARGV[0])
-    period = DateTime.parse(p.match(/[a-zA-Z\s0-9:]+[0-9]{4}/)[0]).to_time.ago_in_words
-    puts "Process #{process} has been active since #{period}"
+    # We need the current offset so we can make time operations in the
+    # same timezone, yey timezones!
+    offset = Time.now.gmt_offset / 3600
+    # Get the date from ps in the "Day Mon  %m hh:mm:ss yyyy" format,
+    # substract offset and pass it to time
+    start = (DateTime.parse(p.match(/[a-zA-Z\s0-9:]+[0-9]{4}/)[0]) - (offset / 24.0) ).to_time
+    length = Time.now - start
+
+    seconds = length.to_int
+    minutes = seconds / 60
+    hours  = seconds / 3600
+    days = seconds / 86400
+
+    print = "Process #{process} has been active for "
+    if days > 0
+      print += "#{days} days, #{(length.to_int / 86400) % 24} hours, #{minutes % 60} minutes "
+    elsif hours > 0
+      print += "#{hours} hours, #{minutes % 60} minutes "
+    else
+      print += "#{minutes} minutes "
+    end
+    puts print +  "and #{length.to_int % minutes} seconds"
   end
 end
