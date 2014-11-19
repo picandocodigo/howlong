@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+require 'howlong'
+
+unless ARGV.length == 1
+  puts 'ArgumentError: This command should be called with 1 argument'
+  puts 'Usage: howlong [process search string]'
+  exit
+end
+
+Howlong.run(ARGV[0])
