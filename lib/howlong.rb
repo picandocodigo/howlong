@@ -2,19 +2,19 @@ require "howlong/version"
 require 'date'
 
 module Howlong
-  def self.howlong(search)
+  def self.find_processes(search)
     processes = `ps -eo lstart,args | grep #{search}`.split(/\n/)
+    names = []
     processes.each do |p|
-      process = p.split(/\s/)[5]
+      process = p.match(/\S+#{search}/)
       # Make sure the first executable contains the search string, so we
       # won't catch processes such as grep `parameter` or this script:
-      if process && process.include?(search)
-        return elapsed_time(p)
-      else
-        puts "No process found with that name"
-        return nil
+      if process
+        time = elapsed_time(p)
+        names << [process[0], time]
       end
     end
+    names
   end
 
   def self.show(process, delayed)
@@ -32,7 +32,10 @@ module Howlong
   end
 
   def self.run(process)
-    show(process, howlong(process))
+    processes = find_processes(process)
+    processes.each do |p|
+      show(p[0], p[1])
+    end
   end
 
 
@@ -49,14 +52,14 @@ module Howlong
 
     seconds = length.to_int
     minutes = seconds / 60
-    hours  = seconds / 3_600
-    days = seconds / 86_400
+    hours   = seconds / 3_600
+    days    = seconds / 86_400
 
     return {
       seconds: length.to_int,
-      minutes: seconds / 60,
-      hours: seconds / 3_600,
-      days: seconds / 886_400
+      minutes: minutes,
+      hours: hours,
+      days: days
     }
   end
 
