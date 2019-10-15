@@ -1,8 +1,11 @@
-require "bundler/gem_tasks"
+require 'bundler/gem_tasks'
 require 'rake/testtask'
 
-Rake::TestTask.new("test") do |t|
-  t.pattern = "test/**/*_test.rb"
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec)
+  task :default => :spec
+rescue LoadError
 end
 
 task :console do
@@ -12,5 +15,3 @@ task :console do
   ARGV.clear
   IRB.start
 end
-
-task :default => 'test'

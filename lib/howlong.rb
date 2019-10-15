@@ -1,9 +1,9 @@
-require "howlong/version"
+require 'howlong/version'
 require 'date'
 
 module Howlong
   def self.find_processes(search)
-    processes = `ps -eo lstart,args | grep #{search}`.split(/\n/)
+    processes = processes_from_system(search).split(/\n/)
     names = []
     processes.each do |p|
       process = p.match(/\S+#{search}/)
@@ -18,30 +18,42 @@ module Howlong
   end
 
   def self.show(process, delayed)
-    unless delayed == nil
-    print = "Process #{process} has been active for "
+    return if delayed.nil?
+    printable = "Process #{process} has been active for "
     if delayed[:days] > 0
-      print += "#{delayed[:days]} days, #{(delayed[:seconds].to_int / 86_400) % 24} hours, #{delayed[:minutes] % 60} minutes "
+      printable += "#{delayed[:days]} days, #{(delayed[:seconds].to_int / 86_400) % 24} hours, #{delayed[:minutes] % 60} minutes "
     elsif delayed[:hours] > 0
-      print += "#{delayed[:hours]} hours, #{delayed[:minutes] % 60} minutes "
+      printable += "#{delayed[:hours]} hours, #{delayed[:minutes] % 60} minutes "
     else
-      print += "#{delayed[:minutes]} minutes "
+      printable += "#{delayed[:minutes]} minutes "
     end
-    puts print +  "and #{delayed[:seconds] % delayed[:minutes]} seconds"
-    end
+    printable +  "and #{delayed[:seconds] % delayed[:minutes]} seconds"
   end
 
-  def self.run(process)
+  def self.friendly_show(process)
+    coso(process).join("\n")
+  end
+
+  def self.print_out(process)
+    puts friendly_show(process)
+  end
+
+  def self.coso(process)
     processes = find_processes(process)
+    result = []
     processes.each do |p|
-      show(p[0], p[1])
+      result << show(p[0], p[1])
     end
+    result
   end
 
+  def self.processes_from_system(search)
+    `ps -eo lstart,args | grep -i #{search}`
+  end
 
   private
+
   def self.elapsed_time(process)
-    p = process.split(/\s/)[6]
     # We need the current offset so we can make time operations in the
     # same timezone, yey timezones!
     offset = Time.now.gmt_offset / 3600
@@ -62,5 +74,4 @@ module Howlong
       days: days
     }
   end
-
 end

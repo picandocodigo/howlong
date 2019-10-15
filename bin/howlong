@@ -7,4 +7,4 @@ unless ARGV.length == 1
   exit
 end
 
-Howlong.run(ARGV[0])
+puts Howlong.print_out(ARGV[0])
