@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'howlong/version'
 require 'date'
 
@@ -19,15 +21,16 @@ module Howlong
 
   def self.build_sentence(process, delayed)
     return if delayed.nil?
+
     printable = "Process #{process} has been active for "
-    if delayed[:days] > 0
+    if (delayed[:days]).positive?
       printable += "#{delayed[:days]} days, #{(delayed[:seconds].to_int / 86_400) % 24} hours, #{delayed[:minutes] % 60} minutes "
-    elsif delayed[:hours] > 0
+    elsif (delayed[:hours]).positive?
       printable += "#{delayed[:hours]} hours, #{delayed[:minutes] % 60} minutes "
     else
       printable += "#{delayed[:minutes]} minutes "
     end
-    printable +  "and #{delayed[:seconds] % delayed[:minutes]} seconds"
+    printable + "and #{delayed[:seconds] % delayed[:minutes]} seconds"
   end
 
   def self.sentences_string(process)
@@ -47,31 +50,33 @@ module Howlong
     result
   end
 
-  private
+  class << self
+    private
 
-  def self.processes_from_system(search)
-    `ps -eo lstart,args | grep -i #{search}`
-  end
+    def processes_from_system(search)
+      `ps -eo lstart,args | grep -i #{search}`
+    end
 
-  def self.elapsed_time(process)
-    # We need the current offset so we can make time operations in the
-    # same timezone, yey timezones!
-    offset = Time.now.gmt_offset / 3600
-    # Get the date from ps in the "Day Mon  %m hh:mm:ss yyyy" format,
-    # substract offset and pass it to time
-    start = (DateTime.parse(process.match(/[a-zA-Z\s0-9:]+[0-9]{4}/)[0]) - (offset / 24.0)).to_time
-    length = Time.now - start
+    def elapsed_time(process)
+      # We need the current offset so we can make time operations in the
+      # same timezone, yey timezones!
+      offset = Time.now.gmt_offset / 3600
+      # Get the date from ps in the "Day Mon  %m hh:mm:ss yyyy" format,
+      # substract offset and pass it to time
+      start = (DateTime.parse(process.match(/[a-zA-Z\s0-9:]+[0-9]{4}/)[0]) - (offset / 24.0)).to_time
+      length = Time.now - start
 
-    seconds = length.to_int
-    minutes = seconds / 60
-    hours   = seconds / 3_600
-    days    = seconds / 86_400
+      seconds = length.to_int
+      minutes = seconds / 60
+      hours   = seconds / 3_600
+      days    = seconds / 86_400
 
-    return {
-      seconds: length.to_int,
-      minutes: minutes,
-      hours: hours,
-      days: days
-    }
+      {
+        seconds: length.to_int,
+        minutes: minutes,
+        hours: hours,
+        days: days
+      }
+    end
   end
 end
