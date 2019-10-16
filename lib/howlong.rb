@@ -17,7 +17,7 @@ module Howlong
     names
   end
 
-  def self.show(process, delayed)
+  def self.build_sentence(process, delayed)
     return if delayed.nil?
     printable = "Process #{process} has been active for "
     if delayed[:days] > 0
@@ -30,28 +30,28 @@ module Howlong
     printable +  "and #{delayed[:seconds] % delayed[:minutes]} seconds"
   end
 
-  def self.friendly_show(process)
-    coso(process).join("\n")
+  def self.sentences_string(process)
+    sentences_array(process).join("\n")
   end
 
-  def self.print_out(process)
-    puts friendly_show(process)
+  def self.run(process)
+    puts sentences_string(process)
   end
 
-  def self.coso(process)
+  def self.sentences_array(process)
     processes = find_processes(process)
     result = []
     processes.each do |p|
-      result << show(p[0], p[1])
+      result << build_sentence(p[0], p[1])
     end
     result
   end
 
+  private
+
   def self.processes_from_system(search)
     `ps -eo lstart,args | grep -i #{search}`
   end
-
-  private
 
   def self.elapsed_time(process)
     # We need the current offset so we can make time operations in the
