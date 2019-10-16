@@ -1,5 +1,7 @@
 # How long
 
+[![Build Status](https://travis-ci.org/picandocodigo/howlong.svg?branch=master)](https://travis-ci.org/picandocodigo/howlong) <a href="https://codeclimate.com/github/picandocodigo/howlong/maintainability"><img src="https://api.codeclimate.com/v1/badges/72c9febd52a3b6293ae7/maintainability" /></a> <a href="https://codeclimate.com/github/picandocodigo/howlong/test_coverage"><img src="https://api.codeclimate.com/v1/badges/72c9febd52a3b6293ae7/test_coverage" /></a>
+
 Ruby script to search for a running process and tell you how long it's been running:
 
 ```bash
