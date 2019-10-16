@@ -24,4 +24,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'timecop'
+
+  spec.metadata      = {
+    "bug_tracker_uri"   => "https://github.com/picandocodigo/howlong/issues",
+    "changelog_uri"     => "https://github.com/picandocodigo/howlong/blob/master/CHANGELOG.md",
+    "documentation_uri" => "https://github.com/picandocodigo/howlong/blob/master/README.md",
+    "homepage_uri"      => "https://github.com/picandocodigo/howlong",
+    "source_code_uri"   => "https://github.com/picandocodigo/howlong"
+  }
 end
